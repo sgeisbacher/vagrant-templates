@@ -1,0 +1,36 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  
+  config.vm.box = "ARTACK/debian-jessie"
+  config.vm.box_check_update = true
+
+  config.vm.network "private_network", ip: "192.168.50.10"
+  
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "1024"
+  end
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ["modifyvm", :id, "--usb", "on"]
+    vb.customize ["modifyvm", :id, "--usbehci", "off"]
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+     sudo sed -i 's/\.ch\./.at./' /etc/apt/sources.list
+     sudo apt-get update
+     sudo apt-get install -y vim zsh htop tcpdump screen
+     sudo wget -O /etc/zsh/zshrc http://git.grml.org/f/grml-etc-core/etc/zsh/zshrc > /dev/null
+     sudo chsh -s /usr/bin/zsh vagrant
+     sudo chsh -s /usr/bin/zsh root
+     sudo touch /root/.zshrc
+     sudo touch /home/vagrant/.zshrc
+     sudo echo "deb http://http.debian.net/debian jessie-backports main" | sudo tee /etc/apt/sources.list.d/jessie-backports.list
+     sudo apt-get update
+     sudo sed -i '/^AcceptEnv/ d' /etc/ssh/sshd_config
+     sudo echo "UseDNS no" >> /etc/ssh/sshd_config
+     sudo service ssh restart
+     sudo echo "syntax on" | sudo tee /etc/vim/vimrc.local
+  SHELL
+end
