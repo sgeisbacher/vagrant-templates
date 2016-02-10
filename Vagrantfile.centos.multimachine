@@ -1,0 +1,55 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$box_url = "puppetlabs/centos-7.0-64-puppet"
+
+Vagrant.configure(2) do |config|
+
+  config.vm.define :master do |mconfig|
+    mconfig.vm.box = $box_url
+    mconfig.vm.hostname = 'master'
+    
+    mconfig.vm.network "private_network", ip: "192.168.50.70"
+
+    mconfig.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--usb", "on"]
+      vb.customize ["modifyvm", :id, "--usbehci", "off"]
+    end
+
+    mconfig.vm.provision "shell", args: $os, inline: <<-SHELL
+        echo "some instructions"
+    SHELL
+
+  end
+
+  config.vm.define :minion1 do |mconfig|
+    mconfig.vm.box = $box_url
+    mconfig.vm.hostname = 'minion1'
+    mconfig.vm.network "private_network", ip: "192.168.50.71"
+
+    mconfig.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--usb", "on"]
+      vb.customize ["modifyvm", :id, "--usbehci", "off"]
+    end
+
+    mconfig.vm.provision "shell", args: $os, inline: <<-SHELL
+        echo "some instructions"
+    SHELL
+  end
+
+  config.vm.define :minion2 do |mconfig|
+    mconfig.vm.box = $box_url
+    mconfig.vm.hostname = 'minion2'
+    mconfig.vm.network "private_network", ip: "192.168.50.72"
+
+    mconfig.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--usb", "on"]
+      vb.customize ["modifyvm", :id, "--usbehci", "off"]
+    end
+
+    mconfig.vm.provision "shell", args: $os, inline: <<-SHELL
+        echo "some instructions"
+    SHELL
+  end
+
+end
